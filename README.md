@@ -22,3 +22,9 @@ Using `--break-system-packages` after the pygame installation fixes this issue.
 ### Completed
 - Set up and tested pygame
 - Added project to Github
+
+
+# documentations
+pygame time library
+https://www.pygame.org/docs/ref/time.html
+https://stackoverflow.com/questions/30720665/countdown-timer-in-pygame
