@@ -28,3 +28,6 @@ Using `--break-system-packages` after the pygame installation fixes this issue.
 pygame time library
 https://www.pygame.org/docs/ref/time.html
 https://stackoverflow.com/questions/30720665/countdown-timer-in-pygame
+
+Flipping image
+https://www.naukri.com/code360/library/flip-the-image-in-pygame
