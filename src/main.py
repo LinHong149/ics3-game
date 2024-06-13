@@ -8,7 +8,7 @@ from game import Game
 from playerSprite import PlayerSprite
 from map import Map
 from camera import Camera
-from layers_list import layer_building, layer_map, layer_nature, layer_rocks, layer_trees
+from shop import Shop
 
 
 # Variables
@@ -25,12 +25,16 @@ MOVEMENT_SPEED = 2
 SCALE = 2.5
 FLIP_CHARACTER = True
 game_map = None
+OPEN_SHOP = False
+SHOP_POSE = (35, 18)
+TILE_X = 0
+TILE_Y = 0
 
 def can_move_to(x, y):
-    global game_map
-    tile_x = int(x // (game_map.tmx_data.tilewidth * game_map.scale))
-    tile_y = int(y // (game_map.tmx_data.tileheight * game_map.scale))
-    return not game_map.check_collision(tile_x, tile_y)
+    global game_map, TILE_X, TILE_Y
+    TILE_X = int(x // (game_map.tmx_data.tilewidth * game_map.scale))
+    TILE_Y = int(y // (game_map.tmx_data.tileheight * game_map.scale))
+    return not game_map.check_collision(TILE_X, TILE_Y)
     # return True
 
 # Player movement
@@ -68,7 +72,7 @@ def player_movement():
     PLAYER_SPRITE_MOVEMENT_COL = int(second % 5)
     
 def main():
-    global game_map
+    global game_map, OPEN_SHOP
 
     # Pygame setup
     pygame.init()
@@ -76,6 +80,8 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     running = True
+
+    shop = Shop(screen)
 
     player_movement_sprite = pygame.image.load('../assets/images/player/Player.png').convert_alpha()
     player_action_sprite = pygame.image.load("../assets/images/player/Player_Actions.png").convert_alpha()
@@ -85,12 +91,29 @@ def main():
     game_map = Map("../data/pygame.tmx", SCALE)
 
     camera = Camera(game_map.width, game_map.height)
+    counter = 0
+    click_buffer = 0
+
 
     while running:
         screen.fill(BLACK)
         game.update()
         game.draw()
         game.draw_text()
+
+        # for event in pygame.event.get():
+        #     print(event)
+        #     if event.type == pygame.MOUSEBUTTONDOWN:
+        #         mouse = pygame.mouse.get_pos()
+        #         print(mouse)
+        #         counter += 1
+
+        if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - click_buffer > 100:
+            counter += 1
+            click_buffer = pygame.time.get_ticks()
+            mouse_pose = pygame.mouse.get_pos()
+
+
 
         # Renders the bottom layer of map
         game_map.render_layers(screen, camera, below_player_layers=[0,1, 3, 5], above_player_layers=[])
@@ -102,8 +125,24 @@ def main():
         # Renders map elements
         game_map.render_layers(screen, camera, below_player_layers=[], above_player_layers=[2, 4, 6])
 
-        player_movement()
+        if TILE_X == SHOP_POSE[0] and TILE_Y == SHOP_POSE[1]:
+            OPEN_SHOP = True
+            print("set to true")
+        if OPEN_SHOP and pygame.key.get_pressed()[pygame.K_ESCAPE]:
+            OPEN_SHOP = False
+
+        if OPEN_SHOP:
+            shop.draw()
+        else:
+            player_movement()
+
         camera.update(player_rect)
+
+
+
+        font = pygame.font.SysFont('arial', 40)
+        title = font.render(str(counter), True, (255, 255, 255))
+        screen.blit(title, (100, 100))
         
         # Allow game to be exited
         for event in pygame.event.get():
