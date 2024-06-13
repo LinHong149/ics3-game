@@ -31,3 +31,6 @@ https://stackoverflow.com/questions/30720665/countdown-timer-in-pygame
 
 Flipping image
 https://www.naukri.com/code360/library/flip-the-image-in-pygame
+
+csv
+https://stackoverflow.com/questions/24662571/python-import-csv-to-list

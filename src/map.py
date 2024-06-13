@@ -1,5 +1,6 @@
 import pygame
 import pytmx
+import csv
 from pytmx.util_pygame import load_pygame
 
 class Map:
@@ -31,6 +32,33 @@ class Map:
             self.render_layer(screen, camera, layer_index)
         for layer_index in above_player_layers:
             self.render_layer(screen, camera, layer_index)
+
+    def get_tile_properties(self, x, y, layer):
+        if 0 <= x < self.tmx_data.width and 0 <= y < self.tmx_data.height:
+            for tile_x, tile_y, gid in layer.tiles():
+                if tile_x == x and tile_y == y:
+                    gid = layer.data[tile_y][tile_x]
+                    # print("gid", gid, "tile property", self.tmx_data.get_tile_properties_by_gid(gid))
+                    return self.tmx_data.get_tile_properties_by_gid(gid)
+        return None
+
+    def check_collision(self, x, y):
+        file = "../data/pygame.tmx"
+        tmx_data = pytmx.TiledMap(file)
+        for layer in tmx_data.visible_layers:
+            if isinstance(layer, pytmx.TiledTileLayer):
+                properties = self.get_tile_properties(x, y, layer)
+                if properties and 'Collision' in properties and properties['Collision'] == True:
+                    return True
+        return False
+
+    # def test(self, x, y):
+    #     tile_x = int(x // (self.tmx_data.tilewidth * self.scale))
+    #     tile_y = int(y // (self.tmx_data.tileheight * self.scale))
+    #     tile_layer = self.tmx_data.get_layer_by_name("Map")
+    #     gid = tile_layer.data[tile_y][tile_x]
+    #     return(tile_layer.data, gid, tile_x, tile_y)
+        
 
     def get_surface(self):
         return self.surface
