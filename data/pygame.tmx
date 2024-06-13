@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="80" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="1">
   <tileset firstgid="1" source="../assets/images/tiles/tsx/tileset.tsx"/>
-  <tileset firstgid="73" source="../assets/images/tiles/tsx/nature.tsx"/>
+  <!-- <tileset firstgid="73" source="../assets/images/tiles/tsx/nature.tsx"/>
   <tileset firstgid="157" source="../assets/images/tiles/tsx/tree.tsx"/>
-  <tileset firstgid="177" source="../assets/images/tiles/tsx/buildings.tsx"/>
+  <tileset firstgid="177" source="../assets/images/tiles/tsx/buildings.tsx"/> -->
   <layer id="1" name="Init" width="80" height="50">
     <properties>
       <property name="Visible" type="bool" value="false"/>
@@ -67,7 +67,7 @@
 </data>
 </layer>
 
-<layer id="3" name="Nature" width="80" height="50">
+<!-- <layer id="3" name="Nature" width="80" height="50">
   <data encoding="csv">
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -337,5 +337,5 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
- </layer>
+ </layer> -->
 </map>

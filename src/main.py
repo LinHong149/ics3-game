@@ -101,37 +101,29 @@ def main():
         game.draw()
         game.draw_text()
 
-        # for event in pygame.event.get():
-        #     print(event)
-        #     if event.type == pygame.MOUSEBUTTONDOWN:
-        #         mouse = pygame.mouse.get_pos()
-        #         print(mouse)
-        #         counter += 1
-
-        if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - click_buffer > 100:
-            counter += 1
-            click_buffer = pygame.time.get_ticks()
-            mouse_pose = pygame.mouse.get_pos()
-
 
 
         # Renders the bottom layer of map
-        game_map.render_layers(screen, camera, below_player_layers=[0,1, 3, 5], above_player_layers=[])
+        # game_map.render_layers(screen, camera, below_player_layers=[0,1,2,3, 5], above_player_layers=[])
+        game_map.render_layers(screen, camera, below_player_layers=[0,1], above_player_layers=[])
 
         player_rect = pygame.Rect(PLAYER_X, PLAYER_Y, PLAYER_MOVEMENT_SPRITE_WIDTH, PLAYER_MOVEMENT_SPRITE_HEIGHT)
         player = player_sprite_sheet.get_image(PLAYER_SPRITE_MOVEMENT_COL, PLAYER_SPRITE_MOVEMENT_ROW, "movement", FLIP_CHARACTER)
         screen.blit(player,camera.apply(player_rect))
        
         # Renders map elements
-        game_map.render_layers(screen, camera, below_player_layers=[], above_player_layers=[2, 4, 6])
+        # game_map.render_layers(screen, camera, below_player_layers=[], above_player_layers=[ 4, 6])
 
         if TILE_X == SHOP_POSE[0] and TILE_Y == SHOP_POSE[1]:
             OPEN_SHOP = True
-            print("set to true")
-        if OPEN_SHOP and pygame.key.get_pressed()[pygame.K_ESCAPE]:
+        if OPEN_SHOP and (pygame.key.get_pressed()[pygame.K_DOWN] or pygame.key.get_pressed()[pygame.K_LEFT] or pygame.key.get_pressed()[pygame.K_RIGHT]  ):
             OPEN_SHOP = False
 
         if OPEN_SHOP:
+            if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - click_buffer > 100:
+                counter += 1
+                click_buffer = pygame.time.get_ticks()
+                mouse_pose = pygame.mouse.get_pos()
             shop.draw()
         else:
             player_movement()
