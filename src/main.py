@@ -12,6 +12,7 @@ from camera import Camera
 from shop import Shop
 from inventory import Inventory
 from currency import Currency
+from toolbar import Toolbar
 
 
 # Variables
@@ -34,6 +35,19 @@ TILE_X = 0
 TILE_Y = 0
 INITIAL_CURRENCY = 100
 
+def draw_toolbar(screen, toolbar, font):
+    screen_width = screen.get_width()
+    item_width = 100  # Width of each toolbar item
+    item_height = 40  # Height of the toolbar
+    x = (screen_width - (item_width * len(toolbar.items))) // 2  # Center the toolbar
+
+    for index, item in enumerate(toolbar.items):
+        rect = pygame.Rect(x + index * item_width, screen.get_height() - item_height - 10, item_width, item_height)
+        color = (255, 0, 0) if index == toolbar.selected_index else (255, 255, 255)
+        pygame.draw.rect(screen, color, rect, 2)  # Draw the border
+        text_surface = font.render(item, True, color)
+        screen.blit(text_surface, (rect.x + 10, rect.y + 10))  # Center text within the item
+
 def draw_inventory(screen, inventory, font):
     x, y = 10, 10
     for item, quantity in inventory.get_items().items():
@@ -43,16 +57,17 @@ def draw_inventory(screen, inventory, font):
         y += 30  # Move down for the next item
 
 def draw_currency(screen, currency, font):
+    global SCREEN_WIDTH
     currency_text = f"Currency: {currency.get_amount()}"
     text_surface = font.render(currency_text, True, (255, 255, 255))
-    screen.blit(text_surface, (10, 50))
+    text_width = text_surface.get_width()
+    screen.blit(text_surface, (SCREEN_WIDTH - text_width - 10, 10))
 
 def can_move_to(x, y):
     global game_map, TILE_X, TILE_Y
     TILE_X = int(x // (game_map.tmx_data.tilewidth * game_map.scale))
     TILE_Y = int(y // (game_map.tmx_data.tileheight * game_map.scale))
     return not game_map.check_collision(TILE_X, TILE_Y)
-    # return True
 
 # Player movement
 def player_movement():
@@ -120,6 +135,10 @@ def main():
     click_buffer = 0
     currency = Currency(INITIAL_CURRENCY,inventory)
 
+    toolbar_items = ["Hoe", "Watering Can", "Axe", "Item"]
+    toolbar = Toolbar(toolbar_items)
+
+
 
     while running:
         screen.fill(BLACK)
@@ -159,11 +178,23 @@ def main():
         # Print texts
         draw_inventory(screen, inventory, font)
         draw_currency(screen, currency, font)
+        draw_toolbar(screen, toolbar, font)
         
         # Allow game to be exited
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.KEYDOWN:
+                # Switch tools using number keys
+                if event.key == pygame.K_1:
+                    toolbar.select_item(0)
+                elif event.key == pygame.K_2:
+                    toolbar.select_item(1)
+                elif event.key == pygame.K_3:
+                    toolbar.select_item(2)
+                elif event.key == pygame.K_4:
+                    toolbar.select_item(3)
+                    
         pygame.display.flip()
         clock.tick(FPS)  # limits FPS
                 
