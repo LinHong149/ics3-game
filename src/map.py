@@ -61,7 +61,7 @@ class Map:
     #     gid = tile_layer.data[tile_y][tile_x]
     #     return(tile_layer.data, gid, tile_x, tile_y)
         
-    def change_tile(self, x, y, direction):
+    def change_tile(self, x, y, direction, inventory):
         layer = self.tmx_data.get_layer_by_name("Map")
         # Makes the current tile the one in front of the player
         print(direction)
@@ -79,6 +79,7 @@ class Map:
         if current_tile != 39:
             layer.data[target_tile[0]][target_tile[1]] = 39
             self.make_map()
+            inventory.remove_item("dirt")
         print(current_tile)
 
 

@@ -185,7 +185,12 @@ def main():
         # draw_currency(screen, currency, font)
         # draw_toolbar(screen, toolbar, font)
         
-        game_map.change_tile(TILE_X, TILE_Y, DIRECTION)
+        try:
+            if inventory.get_items()["dirt"] > 0:
+                print("runs")
+                game_map.change_tile(TILE_X, TILE_Y, DIRECTION, inventory)
+        except:
+            print("no dirt")
         
         # Allow game to be exited
         for event in pygame.event.get():
