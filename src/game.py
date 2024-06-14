@@ -8,7 +8,6 @@ class Game:
         self.running = True
         # Set initial currency to 100
         self.day = 1
-        self.currency = Currency(amount=100)
         self.font = pygame.font.Font(None, 36)  # Default font and size
         self.setup()
 
@@ -28,13 +27,5 @@ class Game:
         # Draw game elements
         pass
 
-    def draw_text(self):
-        # currency_text = str(self.currency.get_amount())
-        currency_text = str(self.currency.get_amount())
-        text_surface = self.font.render(currency_text, True, WHITE)
-        text_box = text_surface.get_rect()
-        text_box.bottomright = (SCREEN_WIDTH, 32)
-        self.screen.blit(text_surface, text_box)  # Draw at the top-left corner
-        
     def next_day(self):
         self.day += 1

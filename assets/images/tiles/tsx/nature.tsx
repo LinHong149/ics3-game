@@ -78,7 +78,7 @@
  </tile>
  <tile id="15">
   <properties>
-   <property name="Collision" type="bool" value="false"/>
+   <property name="Collision" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="16">

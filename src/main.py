@@ -9,6 +9,8 @@ from playerSprite import PlayerSprite
 from map import Map
 from camera import Camera
 from shop import Shop
+from inventory import Inventory
+from currency import Currency
 
 
 # Variables
@@ -29,6 +31,19 @@ OPEN_SHOP = False
 SHOP_POSE = (35, 18)
 TILE_X = 0
 TILE_Y = 0
+
+def draw_inventory(screen, inventory, font):
+    x, y = 10, 10
+    for item, quantity in inventory.get_items().items():
+        item_text = f"{item}: {quantity}"
+        text_surface = font.render(item_text, True, (255, 255, 255))
+        screen.blit(text_surface, (x, y))
+        y += 30  # Move down for the next item
+
+def draw_currency(screen, currency, font):
+    currency_text = f"Currency: {currency.get_amount()}"
+    text_surface = font.render(currency_text, True, (255, 255, 255))
+    screen.blit(text_surface, (10, 50))
 
 def can_move_to(x, y):
     global game_map, TILE_X, TILE_Y
@@ -80,8 +95,11 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     running = True
+    font = pygame.font.SysFont('arial', 40)
+
 
     shop = Shop(screen)
+    inventory = Inventory()
 
     player_movement_sprite = pygame.image.load('../assets/images/player/Player.png').convert_alpha()
     player_action_sprite = pygame.image.load("../assets/images/player/Player_Actions.png").convert_alpha()
@@ -93,15 +111,13 @@ def main():
     camera = Camera(game_map.width, game_map.height)
     counter = 0
     click_buffer = 0
+    currency = Currency()
 
 
     while running:
         screen.fill(BLACK)
         game.update()
         game.draw()
-        game.draw_text()
-
-
 
         # Renders the bottom layer of map
         game_map.render_layers(screen, camera, below_player_layers=[0,1,2,3, 5], above_player_layers=[])
@@ -124,17 +140,19 @@ def main():
                 counter += 1
                 click_buffer = pygame.time.get_ticks()
                 mouse_pose = pygame.mouse.get_pos()
+                inventory.add_item("dirt")
             shop.draw()
+            
         else:
             player_movement()
 
+        print(inventory.get_items())
+
         camera.update(player_rect)
 
-
-
-        font = pygame.font.SysFont('arial', 40)
-        title = font.render(str(counter), True, (255, 255, 255))
-        screen.blit(title, (100, 100))
+        # Print texts
+        draw_inventory(screen, inventory, font)
+        draw_currency(screen, currency, font)
         
         # Allow game to be exited
         for event in pygame.event.get():

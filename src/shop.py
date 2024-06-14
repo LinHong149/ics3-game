@@ -13,6 +13,7 @@ class Shop:
         self.screen.blit(title, (SCREEN_WIDTH/2 - title.get_width()/2, SCREEN_HEIGHT/2 - title.get_height()/2))
         self.screen.blit(start_button, (SCREEN_WIDTH/2 - start_button.get_width()/2, SCREEN_HEIGHT/2 + start_button.get_height()/2))
 
+    
 
     # def __init__(self, game):
     #     self.game = game
