@@ -34,6 +34,7 @@ SHOP_POSE = (35, 18)
 TILE_X = 0
 TILE_Y = 0
 INITIAL_CURRENCY = 100
+DIRECTION = "u"
 
 def draw_toolbar(screen, toolbar, font):
     screen_width = screen.get_width()
@@ -71,24 +72,28 @@ def can_move_to(x, y):
 
 # Player movement
 def player_movement():
-    global PLAYER_X, PLAYER_Y, PLAYER_SPRITE_MOVEMENT_ROW, PLAYER_SPRITE_MOVEMENT_COL, FLIP_CHARACTER
+    global PLAYER_X, PLAYER_Y, PLAYER_SPRITE_MOVEMENT_ROW, PLAYER_SPRITE_MOVEMENT_COL, FLIP_CHARACTER, DIRECTION
     NEW_X, NEW_Y = PLAYER_X, PLAYER_Y
 
     keyPressed = pygame.key.get_pressed()
     if keyPressed[pygame.K_UP]:
         NEW_Y -= MOVEMENT_SPEED
         PLAYER_SPRITE_MOVEMENT_ROW = 5
+        DIRECTION = "u"
     elif keyPressed[pygame.K_DOWN]:
         NEW_Y += MOVEMENT_SPEED
         PLAYER_SPRITE_MOVEMENT_ROW = 3
+        DIRECTION = "d"
     elif keyPressed[pygame.K_LEFT]:
         NEW_X -= MOVEMENT_SPEED
         PLAYER_SPRITE_MOVEMENT_ROW = 4
         FLIP_CHARACTER = True
+        DIRECTION = "l"
     elif keyPressed[pygame.K_RIGHT]:
         NEW_X += MOVEMENT_SPEED
         PLAYER_SPRITE_MOVEMENT_ROW = 4
         FLIP_CHARACTER = False
+        DIRECTION = "r"
     else:
         # Changes character back to standing position
         if PLAYER_SPRITE_MOVEMENT_ROW >= 3:
@@ -177,8 +182,10 @@ def main():
 
         # Print texts
         draw_inventory(screen, inventory, font)
-        draw_currency(screen, currency, font)
-        draw_toolbar(screen, toolbar, font)
+        # draw_currency(screen, currency, font)
+        # draw_toolbar(screen, toolbar, font)
+        
+        game_map.change_tile(TILE_X, TILE_Y, DIRECTION)
         
         # Allow game to be exited
         for event in pygame.event.get():
@@ -194,7 +201,7 @@ def main():
                     toolbar.select_item(2)
                 elif event.key == pygame.K_4:
                     toolbar.select_item(3)
-                    
+
         pygame.display.flip()
         clock.tick(FPS)  # limits FPS
                 

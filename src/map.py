@@ -61,6 +61,26 @@ class Map:
     #     gid = tile_layer.data[tile_y][tile_x]
     #     return(tile_layer.data, gid, tile_x, tile_y)
         
+    def change_tile(self, x, y, direction):
+        layer = self.tmx_data.get_layer_by_name("Map")
+        # Makes the current tile the one in front of the player
+        print(direction)
+        match direction:
+            case "u":
+                target_tile = (y, x+1)
+            case "d":
+                target_tile = (y+2, x+1)
+            case "l":
+                target_tile = (y+1, x)
+            case "r":
+                target_tile = (y+1, x+2)
+        current_tile = layer.data[target_tile[0]][target_tile[1]]
+        # If not grass tile
+        if current_tile != 39:
+            layer.data[target_tile[0]][target_tile[1]] = 39
+            self.make_map()
+        print(current_tile)
+
 
     def get_surface(self):
         return self.surface
