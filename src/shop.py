@@ -8,12 +8,10 @@ class Shop:
 
     def draw(self):
         font = pygame.font.SysFont('arial', 40)
-        title = font.render('My Game', True, (255, 255, 255))
-        start_button = font.render('Start', True, (255, 255, 255))
+        title = font.render('Shop', True, (255, 255, 255))
         self.screen.blit(title, (SCREEN_WIDTH/2 - title.get_width()/2, SCREEN_HEIGHT/2 - title.get_height()/2))
-        self.screen.blit(start_button, (SCREEN_WIDTH/2 - start_button.get_width()/2, SCREEN_HEIGHT/2 + start_button.get_height()/2))
 
-    
+
 
     # def __init__(self, game):
     #     self.game = game

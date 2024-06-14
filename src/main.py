@@ -1,7 +1,8 @@
 # Import libraries
 import pygame
-import csv
 from pytmx.util_pygame import load_pygame
+import csv
+import json
 import sys
 from settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, WHITE, BLACK, GREEN, BLUE, RED, YELLOW
 from game import Game
@@ -31,6 +32,7 @@ OPEN_SHOP = False
 SHOP_POSE = (35, 18)
 TILE_X = 0
 TILE_Y = 0
+INITIAL_CURRENCY = 100
 
 def draw_inventory(screen, inventory, font):
     x, y = 10, 10
@@ -89,6 +91,11 @@ def player_movement():
 def main():
     global game_map, OPEN_SHOP
 
+    # Get item data from ../data/items.json file
+    with open('../data/items.json', 'r') as file:
+        items_data = json.load(file)
+    items_prices = {item['name']: item['price'] for item in items_data['items']}
+
     # Pygame setup
     pygame.init()
     pygame.display.set_caption('Title')
@@ -111,7 +118,7 @@ def main():
     camera = Camera(game_map.width, game_map.height)
     counter = 0
     click_buffer = 0
-    currency = Currency()
+    currency = Currency(INITIAL_CURRENCY,inventory)
 
 
     while running:
@@ -139,14 +146,13 @@ def main():
             if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - click_buffer > 100:
                 counter += 1
                 click_buffer = pygame.time.get_ticks()
-                mouse_pose = pygame.mouse.get_pos()
-                inventory.add_item("dirt")
+                # mouse_pose = pygame.mouse.get_pos()
+                currency.buy(items_prices["dirt"], "dirt")
             shop.draw()
             
         else:
             player_movement()
 
-        print(inventory.get_items())
 
         camera.update(player_rect)
 
