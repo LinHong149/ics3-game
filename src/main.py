@@ -68,7 +68,7 @@ def player_movement():
         PLAYER_Y = NEW_Y
     
     # Changes the column by one
-    second = pygame.time.get_ticks() / 200
+    second = pygame.time.get_ticks() / 160
     PLAYER_SPRITE_MOVEMENT_COL = int(second % 5)
     
 def main():
@@ -104,15 +104,15 @@ def main():
 
 
         # Renders the bottom layer of map
-        # game_map.render_layers(screen, camera, below_player_layers=[0,1,2,3, 5], above_player_layers=[])
-        game_map.render_layers(screen, camera, below_player_layers=[0,1], above_player_layers=[])
+        game_map.render_layers(screen, camera, below_player_layers=[0,1,2,3, 5], above_player_layers=[])
+        # game_map.render_layers(screen, camera, below_player_layers=[1,2], above_player_layers=[])
 
         player_rect = pygame.Rect(PLAYER_X, PLAYER_Y, PLAYER_MOVEMENT_SPRITE_WIDTH, PLAYER_MOVEMENT_SPRITE_HEIGHT)
         player = player_sprite_sheet.get_image(PLAYER_SPRITE_MOVEMENT_COL, PLAYER_SPRITE_MOVEMENT_ROW, "movement", FLIP_CHARACTER)
         screen.blit(player,camera.apply(player_rect))
        
         # Renders map elements
-        # game_map.render_layers(screen, camera, below_player_layers=[], above_player_layers=[ 4, 6])
+        game_map.render_layers(screen, camera, below_player_layers=[], above_player_layers=[ 4, 6])
 
         if TILE_X == SHOP_POSE[0] and TILE_Y == SHOP_POSE[1]:
             OPEN_SHOP = True
