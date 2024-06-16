@@ -34,3 +34,6 @@ https://www.naukri.com/code360/library/flip-the-image-in-pygame
 
 csv
 https://stackoverflow.com/questions/24662571/python-import-csv-to-list
+
+drawing shapes with opacity
+https://stackoverflow.com/questions/6339057/draw-transparent-rectangles-and-polygons-in-pygame
