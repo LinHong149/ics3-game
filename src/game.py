@@ -3,6 +3,7 @@ from settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, WHITE, BLACK, GREEN, BLUE
 from currency import Currency
 
 class Game:
+    click_buffer = 0
     def __init__(self, screen):
         self.screen = screen
         self.running = True
@@ -22,10 +23,8 @@ class Game:
     def update(self):
         # Update game state
         pass
-    
-    def draw(self):
-        # Draw game elements
-        pass
 
     def next_day(self):
         self.day += 1
+        print(self.day)
+    

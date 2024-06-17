@@ -43,6 +43,7 @@ clock = None
 running = True
 font = None
 inventory = None
+click_buffer = 0
 
 def init_pygame():
     global screen, clock, running, font, PLAYER_MOVEMENT_SPRITE, PLAYER_ACTION_SPRITE, PLAYER_WATER_SPRITE, SHEETS_LIST
@@ -57,6 +58,11 @@ def init_pygame():
     PLAYER_HOE_SPRITE = pygame.image.load("../assets/images/player/Player_Hoe.png").convert_alpha()
     PLAYER_WATER_SPRITE = pygame.image.load("../assets/images/player/Player_Water.png").convert_alpha()
     SHEETS_LIST = [PLAYER_MOVEMENT_SPRITE, PLAYER_HOE_SPRITE, PLAYER_WATER_SPRITE]
+
+def draw_next_day_button(screen):
+    next_day_button = pygame.Rect(400, 400, 100, 100)
+    pygame.draw.rect(screen, BLACK, next_day_button)
+    return next_day_button
 
 def draw_toolbar(screen, toolbar, font):
     screen_width = screen.get_width()
@@ -192,7 +198,6 @@ def main():
     while running:
         screen.fill(BLACK)
         game.update()
-        game.draw()
 
         # Renders the bottom layer of map
         game_map.render_layers(screen, camera, below_player_layers=[0,1,2,3,5], above_player_layers=[])
@@ -220,6 +225,7 @@ def main():
         draw_inventory(screen, inventory, font)
         draw_currency(screen, currency, font)
         draw_toolbar(screen, toolbar, font)
+        next_day_button = draw_next_day_button(screen)
         
         game_map.expand_land(TILE_X, TILE_Y, DIRECTION, inventory)
         
@@ -237,6 +243,13 @@ def main():
                     toolbar.select_item(2)
                 elif event.key == pygame.K_4:
                     toolbar.select_item(3)
+
+
+            if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - click_buffer > 400:
+                mouse_pos = pygame.mouse.get_pos()
+                if next_day_button.collidepoint(mouse_pos):
+                    print("next day")
+                    game.next_day()
 
         pygame.display.flip()
         clock.tick(FPS)  # limits FPS
