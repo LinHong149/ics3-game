@@ -54,9 +54,9 @@ def init_pygame():
     font = pygame.font.SysFont('arial', 40)
 
     PLAYER_MOVEMENT_SPRITE = pygame.image.load('../assets/images/player/Player.png').convert_alpha()
-    PLAYER_ACTION_SPRITE = pygame.image.load("../assets/images/player/Player_Actions.png").convert_alpha()
+    PLAYER_HOE_SPRITE = pygame.image.load("../assets/images/player/Player_Hoe.png").convert_alpha()
     PLAYER_WATER_SPRITE = pygame.image.load("../assets/images/player/Player_Water.png").convert_alpha()
-    SHEETS_LIST = [PLAYER_MOVEMENT_SPRITE, PLAYER_ACTION_SPRITE, PLAYER_WATER_SPRITE]
+    SHEETS_LIST = [PLAYER_MOVEMENT_SPRITE, PLAYER_HOE_SPRITE, PLAYER_WATER_SPRITE]
 
 def draw_toolbar(screen, toolbar, font):
     screen_width = screen.get_width()
@@ -155,8 +155,8 @@ def player_movement():
         PLAYER_Y = NEW_Y
     
     # Changes the column by one
-    second = pygame.time.get_ticks() / 160
-    PLAYER_SPRITE_MOVEMENT_COL = int(second % 5)
+    second = pygame.time.get_ticks() / 120
+    PLAYER_SPRITE_MOVEMENT_COL = int(second % 6)
     
 def main():
     global game_map, OPEN_SHOP, toolbar, PLAYER_SPRITE_SHEET, running, inventory
