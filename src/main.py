@@ -16,11 +16,11 @@ from toolbar import Toolbar
 
 
 # Variables
-PLAYER_ACTION_SPRITE_WIDTH = 48
-PLAYER_ACTION_SPRITE_HEIGHT = 48
-PLAYER_MOVEMENT_SPRITE_WIDTH = 32
-PLAYER_MOVEMENT_SPRITE_HEIGHT = 32
+PLAYER_ACTION_SPRITE_DIMENTION = 48
+PLAYER_MOVEMENT_SPRITE_DIMENTION= 32
+DIMENTION = 32
 PLAYER_SPRITE_MOVEMENT_ROW_LIST = ["standing_front", "standing_side", "standing_back", "walking_front", "walking_side", "walking_back"]
+PLAYER_SPRITE_ACTION_ROW_LIST = ["axe_side", "axe_front", "axe_back", "hoe_side", "hoe_front", "hoe_back", "watering_front", "watering_back", "watering_side"]
 PLAYER_SPRITE_MOVEMENT_ROW = 0
 PLAYER_SPRITE_MOVEMENT_COL = 0
 PLAYER_X = 1425
@@ -35,6 +35,28 @@ TILE_X = 0
 TILE_Y = 0
 INITIAL_CURRENCY = 100
 DIRECTION = "u"
+toolbar = None
+PLAYER_SPRITE_SHEET = None
+PLAYER = None
+screen = None
+clock = None
+running = True
+font = None
+inventory = None
+
+def init_pygame():
+    global screen, clock, running, font, PLAYER_MOVEMENT_SPRITE, PLAYER_ACTION_SPRITE, PLAYER_WATER_SPRITE, SHEETS_LIST
+    pygame.init()
+    pygame.display.set_caption('Title')
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    clock = pygame.time.Clock()
+    running = True
+    font = pygame.font.SysFont('arial', 40)
+
+    PLAYER_MOVEMENT_SPRITE = pygame.image.load('../assets/images/player/Player.png').convert_alpha()
+    PLAYER_ACTION_SPRITE = pygame.image.load("../assets/images/player/Player_Actions.png").convert_alpha()
+    PLAYER_WATER_SPRITE = pygame.image.load("../assets/images/player/Player_Water.png").convert_alpha()
+    SHEETS_LIST = [PLAYER_MOVEMENT_SPRITE, PLAYER_ACTION_SPRITE, PLAYER_WATER_SPRITE]
 
 def draw_toolbar(screen, toolbar, font):
     screen_width = screen.get_width()
@@ -64,6 +86,22 @@ def draw_currency(screen, currency, font):
     text_width = text_surface.get_width()
     screen.blit(text_surface, (SCREEN_WIDTH - text_width - 10, 10))
 
+def set_sprite(type):
+    global PLAYER_MOVEMENT_SPRITE_DIMENTION, PLAYER_ACTION_SPRITE_DIMENTION, SCALE, PLAYER_SPRITE_SHEET, DIMENTION, PLAYER, inventory, SHEETS_LIST
+    if type == "movement":
+        DIMENTION = PLAYER_MOVEMENT_SPRITE_DIMENTION
+        SHEET_NUMBER = 0
+    elif type == "action" and toolbar.get_selected_item() == "Hoe":
+        DIMENTION = PLAYER_MOVEMENT_SPRITE_DIMENTION
+        SHEET_NUMBER = 1
+    elif type == "action" and toolbar.get_selected_item() == "Water":
+        DIMENTION = PLAYER_MOVEMENT_SPRITE_DIMENTION
+        SHEET_NUMBER = 2
+    PLAYER_SPRITE_SHEET = PlayerSprite(DIMENTION, DIMENTION, SCALE, BLACK)
+    PLAYER = PLAYER_SPRITE_SHEET.get_image(SHEETS_LIST[SHEET_NUMBER], PLAYER_SPRITE_MOVEMENT_COL, PLAYER_SPRITE_MOVEMENT_ROW, type, FLIP_CHARACTER)
+
+
+
 def can_move_to(x, y):
     global game_map, TILE_X, TILE_Y
     TILE_X = int(x // (game_map.tmx_data.tilewidth * game_map.scale))
@@ -72,32 +110,44 @@ def can_move_to(x, y):
 
 # Player movement
 def player_movement():
-    global PLAYER_X, PLAYER_Y, PLAYER_SPRITE_MOVEMENT_ROW, PLAYER_SPRITE_MOVEMENT_COL, FLIP_CHARACTER, DIRECTION
+    global PLAYER_X, PLAYER_Y, PLAYER_SPRITE_MOVEMENT_ROW, PLAYER_SPRITE_MOVEMENT_COL, FLIP_CHARACTER, DIRECTION, toolbar
     NEW_X, NEW_Y = PLAYER_X, PLAYER_Y
+    
 
     keyPressed = pygame.key.get_pressed()
-    if keyPressed[pygame.K_UP]:
+    if keyPressed[pygame.K_UP] or keyPressed[pygame.K_w]:
         NEW_Y -= MOVEMENT_SPEED
         PLAYER_SPRITE_MOVEMENT_ROW = 5
         DIRECTION = "u"
-    elif keyPressed[pygame.K_DOWN]:
+    elif keyPressed[pygame.K_DOWN] or keyPressed[pygame.K_s]:
         NEW_Y += MOVEMENT_SPEED
         PLAYER_SPRITE_MOVEMENT_ROW = 3
         DIRECTION = "d"
-    elif keyPressed[pygame.K_LEFT]:
+    elif keyPressed[pygame.K_LEFT] or keyPressed[pygame.K_a]:
         NEW_X -= MOVEMENT_SPEED
         PLAYER_SPRITE_MOVEMENT_ROW = 4
         FLIP_CHARACTER = True
         DIRECTION = "l"
-    elif keyPressed[pygame.K_RIGHT]:
+    elif keyPressed[pygame.K_RIGHT] or keyPressed[pygame.K_d]:
         NEW_X += MOVEMENT_SPEED
         PLAYER_SPRITE_MOVEMENT_ROW = 4
         FLIP_CHARACTER = False
         DIRECTION = "r"
+    elif keyPressed[pygame.K_SPACE]:
+        if toolbar.get_selected_item() == "Hoe":
+            game_map.hoe_land(TILE_X, TILE_Y, DIRECTION)
+        elif toolbar.get_selected_item() == "Water":
+            game_map.water_land(TILE_X, TILE_Y, DIRECTION)
     else:
         # Changes character back to standing position
         if PLAYER_SPRITE_MOVEMENT_ROW >= 3:
             PLAYER_SPRITE_MOVEMENT_ROW -= 3
+    
+
+    if toolbar.get_selected_item() == "Empty":
+        SPRITE = set_sprite("movement")
+    else:
+        SPRITE = set_sprite("action")
 
     if can_move_to(NEW_X, PLAYER_Y):
         PLAYER_X = NEW_X
@@ -109,7 +159,7 @@ def player_movement():
     PLAYER_SPRITE_MOVEMENT_COL = int(second % 5)
     
 def main():
-    global game_map, OPEN_SHOP
+    global game_map, OPEN_SHOP, toolbar, PLAYER_SPRITE_SHEET, running, inventory
 
     # Get item data from ../data/items.json file
     with open('../data/items.json', 'r') as file:
@@ -117,20 +167,13 @@ def main():
     items_prices = {item['name']: item['price'] for item in items_data['items']}
 
     # Pygame setup
-    pygame.init()
-    pygame.display.set_caption('Title')
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    clock = pygame.time.Clock()
-    running = True
-    font = pygame.font.SysFont('arial', 40)
+    init_pygame()
 
 
     shop = Shop(screen)
     inventory = Inventory()
 
-    player_movement_sprite = pygame.image.load('../assets/images/player/Player.png').convert_alpha()
-    player_action_sprite = pygame.image.load("../assets/images/player/Player_Actions.png").convert_alpha()
-    player_sprite_sheet = PlayerSprite(player_movement_sprite, player_action_sprite, PLAYER_MOVEMENT_SPRITE_WIDTH, PLAYER_MOVEMENT_SPRITE_HEIGHT, SCALE, BLACK)
+    set_sprite("movement")
 
     game = Game(screen)
     game_map = Map("../data/pygame.tmx", SCALE)
@@ -140,7 +183,7 @@ def main():
     click_buffer = 0
     currency = Currency(INITIAL_CURRENCY,inventory)
 
-    toolbar_items = ["Hoe", "Watering Can", "Axe", "Item"]
+    toolbar_items = ["Empty", "Hoe", "Water"]
     toolbar = Toolbar(toolbar_items)
 
 
@@ -151,15 +194,13 @@ def main():
         game.draw()
 
         # Renders the bottom layer of map
-        game_map.render_layers(screen, camera, below_player_layers=[0,1,2,3, 5], above_player_layers=[])
-        # game_map.render_layers(screen, camera, below_player_layers=[1,2], above_player_layers=[])
+        game_map.render_layers(screen, camera, below_player_layers=[0,1,2,3,5], above_player_layers=[])
 
-        player_rect = pygame.Rect(PLAYER_X, PLAYER_Y, PLAYER_MOVEMENT_SPRITE_WIDTH, PLAYER_MOVEMENT_SPRITE_HEIGHT)
-        player = player_sprite_sheet.get_image(PLAYER_SPRITE_MOVEMENT_COL, PLAYER_SPRITE_MOVEMENT_ROW, "movement", FLIP_CHARACTER)
-        screen.blit(player,camera.apply(player_rect))
+        player_rect = pygame.Rect(PLAYER_X, PLAYER_Y, PLAYER_MOVEMENT_SPRITE_DIMENTION, PLAYER_MOVEMENT_SPRITE_DIMENTION)
+        screen.blit(PLAYER,camera.apply(player_rect))
        
         # Renders map elements
-        game_map.render_layers(screen, camera, below_player_layers=[], above_player_layers=[ 4, 6])
+        game_map.render_layers(screen, camera, below_player_layers=[], above_player_layers=[4, 6 ])
 
         if TILE_X == SHOP_POSE[0] and TILE_Y == SHOP_POSE[1]:
             OPEN_SHOP = True
@@ -182,15 +223,16 @@ def main():
 
         # Print texts
         draw_inventory(screen, inventory, font)
-        # draw_currency(screen, currency, font)
-        # draw_toolbar(screen, toolbar, font)
+        draw_currency(screen, currency, font)
+        draw_toolbar(screen, toolbar, font)
         
         try:
             if inventory.get_items()["dirt"] > 0:
-                print("runs")
-                game_map.change_tile(TILE_X, TILE_Y, DIRECTION, inventory)
+                # print("runs")
+                game_map.expand_land(TILE_X, TILE_Y, DIRECTION, inventory)
         except:
-            print("no dirt")
+            a = 1
+            # print("no dirt")
         
         # Allow game to be exited
         for event in pygame.event.get():
