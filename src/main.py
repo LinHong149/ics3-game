@@ -138,6 +138,9 @@ def player_movement():
             game_map.hoe_land(TILE_X, TILE_Y, DIRECTION)
         elif toolbar.get_selected_item() == "Water":
             game_map.water_land(TILE_X, TILE_Y, DIRECTION)
+        elif toolbar.get_selected_item() == "Seed":
+            if "Seed" in inventory.get_items():
+                game_map.plant_seed(TILE_X, TILE_Y, DIRECTION)
     else:
         # Changes character back to standing position
         if PLAYER_SPRITE_MOVEMENT_ROW >= 3:
@@ -183,7 +186,7 @@ def main():
     click_buffer = 0
     currency = Currency(INITIAL_CURRENCY,inventory)
 
-    toolbar_items = ["Empty", "Hoe", "Water"]
+    toolbar_items = ["Empty", "Hoe", "Water", "Seed"]
     toolbar = Toolbar(toolbar_items)
 
 

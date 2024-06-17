@@ -108,7 +108,6 @@ class Map:
             if current_tile != dry_dirt_block:
                 layer.data[target_tile[0]][target_tile[1]] = dry_dirt_block
                 self.make_map()
-            print(current_tile)
 
     def water_land(self, x, y, direction):
         layer = self.tmx_data.get_layer_by_name("Map")
@@ -130,7 +129,29 @@ class Map:
         if current_tile == dry_dirt_block:
             layer.data[target_tile[0]][target_tile[1]] = wet_dirt_block
             self.make_map()
-        print(current_tile)
+
+    def plant_seed(self, x, y, direction):
+        map_layer = self.tmx_data.get_layer_by_name("Map")
+        nature_layer = self.tmx_data.get_layer_by_name("Nature")
+        # Makes the current tile the one in front of the player
+        wet_dirt_block = 23
+        seed_block = 10
+        print(direction)
+        match direction:
+            case "u":
+                target_tile = (y, x+1)
+            case "d":
+                target_tile = (y+2, x+1)
+            case "l":
+                target_tile = (y+1, x)
+            case "r":
+                target_tile = (y+1, x+2)
+        current_map_tile = map_layer.data[target_tile[0]][target_tile[1]]
+        current_nature_tile = nature_layer.data[target_tile[0]][target_tile[1]]
+        # If not grass tile
+        if current_map_tile == wet_dirt_block and current_nature_tile == 0:
+            nature_layer.data[target_tile[0]][target_tile[1]] = seed_block
+            self.make_map()
 
     def get_surface(self):
         return self.surface
