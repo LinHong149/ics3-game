@@ -110,7 +110,7 @@ def can_move_to(x, y):
 
 # Player movement
 def player_movement():
-    global PLAYER_X, PLAYER_Y, PLAYER_SPRITE_MOVEMENT_ROW, PLAYER_SPRITE_MOVEMENT_COL, FLIP_CHARACTER, DIRECTION, toolbar
+    global PLAYER_X, PLAYER_Y, PLAYER_SPRITE_MOVEMENT_ROW, PLAYER_SPRITE_MOVEMENT_COL, FLIP_CHARACTER, DIRECTION, toolbar, inventory
     NEW_X, NEW_Y = PLAYER_X, PLAYER_Y
     
 
@@ -139,15 +139,14 @@ def player_movement():
         elif toolbar.get_selected_item() == "Water":
             game_map.water_land(TILE_X, TILE_Y, DIRECTION)
         elif toolbar.get_selected_item() == "Seed":
-            if "Seed" in inventory.get_items():
-                game_map.plant_seed(TILE_X, TILE_Y, DIRECTION)
+            game_map.plant_seed(TILE_X, TILE_Y, DIRECTION, inventory)
     else:
         # Changes character back to standing position
         if PLAYER_SPRITE_MOVEMENT_ROW >= 3:
             PLAYER_SPRITE_MOVEMENT_ROW -= 3
     
 
-    if toolbar.get_selected_item() == "Empty":
+    if toolbar.get_selected_item() == "Empty" or toolbar.get_selected_item() == "Seed":
         SPRITE = set_sprite("movement")
     else:
         SPRITE = set_sprite("action")
@@ -173,7 +172,6 @@ def main():
     init_pygame()
 
 
-    shop = Shop(screen)
     inventory = Inventory()
 
     set_sprite("movement")
@@ -183,8 +181,8 @@ def main():
 
     camera = Camera(game_map.width, game_map.height)
     counter = 0
-    click_buffer = 0
     currency = Currency(INITIAL_CURRENCY,inventory)
+    shop = Shop(screen, currency, items_prices)
 
     toolbar_items = ["Empty", "Hoe", "Water", "Seed"]
     toolbar = Toolbar(toolbar_items)
@@ -211,13 +209,7 @@ def main():
             OPEN_SHOP = False
 
         if OPEN_SHOP:
-            if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - click_buffer > 100:
-                counter += 1
-                click_buffer = pygame.time.get_ticks()
-                # mouse_pose = pygame.mouse.get_pos()
-                currency.buy(items_prices["dirt"], "dirt")
             shop.draw()
-            
         else:
             player_movement()
 
@@ -229,13 +221,7 @@ def main():
         draw_currency(screen, currency, font)
         draw_toolbar(screen, toolbar, font)
         
-        try:
-            if inventory.get_items()["dirt"] > 0:
-                # print("runs")
-                game_map.expand_land(TILE_X, TILE_Y, DIRECTION, inventory)
-        except:
-            a = 1
-            # print("no dirt")
+        game_map.expand_land(TILE_X, TILE_Y, DIRECTION, inventory)
         
         # Allow game to be exited
         for event in pygame.event.get():

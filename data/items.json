@@ -3,6 +3,10 @@
         {
             "name": "dirt",
             "price": 20
+        },
+        {
+            "name": "carrot_seeds",
+            "price": 10
         }
     ]
 }

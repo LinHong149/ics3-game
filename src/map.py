@@ -68,26 +68,27 @@ class Map:
     #     return(tile_layer.data, gid, tile_x, tile_y)
         
     def expand_land(self, x, y, direction, inventory):
-        layer = self.tmx_data.get_layer_by_name("Map")
-        # Makes the current tile the one in front of the player
-        grass_block = 39
-        print(direction)
-        match direction:
-            case "u":
-                target_tile = (y, x+1)
-            case "d":
-                target_tile = (y+2, x+1)
-            case "l":
-                target_tile = (y+1, x)
-            case "r":
-                target_tile = (y+1, x+2)
-        current_tile = layer.data[target_tile[0]][target_tile[1]]
-        # If not grass tile
-        if current_tile != grass_block:
-            layer.data[target_tile[0]][target_tile[1]] = grass_block
-            self.make_map()
-            inventory.remove_item("dirt")
-        print(current_tile)
+        if "dirt" in inventory.get_items() and inventory.get_items()["dirt"] > 0:
+            layer = self.tmx_data.get_layer_by_name("Map")
+            # Makes the current tile the one in front of the player
+            grass_block = 39
+            print(direction)
+            match direction:
+                case "u":
+                    target_tile = (y, x+1)
+                case "d":
+                    target_tile = (y+2, x+1)
+                case "l":
+                    target_tile = (y+1, x)
+                case "r":
+                    target_tile = (y+1, x+2)
+            current_tile = layer.data[target_tile[0]][target_tile[1]]
+            # If not grass tile
+            if current_tile != grass_block:
+                layer.data[target_tile[0]][target_tile[1]] = grass_block
+                self.make_map()
+                inventory.remove_item("dirt")
+            print(current_tile)
 
     def hoe_land(self, x, y, direction):
             layer = self.tmx_data.get_layer_by_name("Map")
@@ -130,28 +131,32 @@ class Map:
             layer.data[target_tile[0]][target_tile[1]] = wet_dirt_block
             self.make_map()
 
-    def plant_seed(self, x, y, direction):
-        map_layer = self.tmx_data.get_layer_by_name("Map")
-        nature_layer = self.tmx_data.get_layer_by_name("Nature")
-        # Makes the current tile the one in front of the player
-        wet_dirt_block = 23
-        seed_block = 10
-        print(direction)
-        match direction:
-            case "u":
-                target_tile = (y, x+1)
-            case "d":
-                target_tile = (y+2, x+1)
-            case "l":
-                target_tile = (y+1, x)
-            case "r":
-                target_tile = (y+1, x+2)
-        current_map_tile = map_layer.data[target_tile[0]][target_tile[1]]
-        current_nature_tile = nature_layer.data[target_tile[0]][target_tile[1]]
-        # If not grass tile
-        if current_map_tile == wet_dirt_block and current_nature_tile == 0:
-            nature_layer.data[target_tile[0]][target_tile[1]] = seed_block
-            self.make_map()
+    def plant_seed(self, x, y, direction, inventory):
+        if "carrot_seeds" in inventory.get_items() and inventory.get_items()["carrot_seeds"] > 0:
+            map_layer = self.tmx_data.get_layer_by_name("Map")
+            nature_layer = self.tmx_data.get_layer_by_name("Nature")
+            # Makes the current tile the one in front of the player
+            wet_dirt_block = 23
+            seed_block = 83
+            print(direction)
+            match direction:
+                case "u":
+                    target_tile = (y, x+1)
+                case "d":
+                    target_tile = (y+2, x+1)
+                case "l":
+                    target_tile = (y+1, x)
+                case "r":
+                    target_tile = (y+1, x+2)
+            current_map_tile = map_layer.data[target_tile[0]][target_tile[1]]
+            current_nature_tile = nature_layer.data[target_tile[0]][target_tile[1]]
+            # If not grass tile
+            if current_map_tile == wet_dirt_block and current_nature_tile == 0:
+                nature_layer.data[target_tile[0]][target_tile[1]] = seed_block
+                inventory.get_items()["carrot_seeds"] -= 1
+                self.make_map()
+            print(current_map_tile, current_nature_tile)
+
 
     def get_surface(self):
         return self.surface
