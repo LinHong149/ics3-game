@@ -60,7 +60,9 @@ def init_pygame():
     SHEETS_LIST = [PLAYER_MOVEMENT_SPRITE, PLAYER_HOE_SPRITE, PLAYER_WATER_SPRITE]
 
 def draw_next_day_button(screen):
-    next_day_button = pygame.Rect(400, 400, 100, 100)
+    BUTTON_WIDTH = 100
+    BUTTON_HEIGHT = 100
+    next_day_button = pygame.Rect(SCREEN_WIDTH - BUTTON_WIDTH - 10 , SCREEN_HEIGHT - BUTTON_HEIGHT - 10, BUTTON_WIDTH, BUTTON_HEIGHT)
     pygame.draw.rect(screen, BLACK, next_day_button)
     return next_day_button
 
