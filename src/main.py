@@ -44,9 +44,13 @@ running = True
 font = None
 inventory = None
 click_buffer = 0
+sound = None
+sound_effect_playing = False
+
 
 def init_pygame():
-    global screen, clock, running, font, PLAYER_MOVEMENT_SPRITE, PLAYER_ACTION_SPRITE, PLAYER_WATER_SPRITE, SHEETS_LIST
+    # Initialize display
+    global screen, clock, running, font, PLAYER_MOVEMENT_SPRITE, PLAYER_ACTION_SPRITE, PLAYER_WATER_SPRITE, SHEETS_LIST, sound
     pygame.init()
     pygame.display.set_caption('Title')
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -54,10 +58,28 @@ def init_pygame():
     running = True
     font = pygame.font.SysFont('arial', 40)
 
+    # Initialize Music
+    pygame.mixer.init
+    background_sound = pygame.mixer.Sound("../assets/sounds/background.mp3")
+    background_sound.play()
+    background_sound.set_volume(0.4)
+
+    sound = pygame.mixer.Sound("../assets/sounds/effects/grass.mp3.ogg")
+
     PLAYER_MOVEMENT_SPRITE = pygame.image.load('../assets/images/player/Player.png').convert_alpha()
     PLAYER_HOE_SPRITE = pygame.image.load("../assets/images/player/Player_Hoe.png").convert_alpha()
     PLAYER_WATER_SPRITE = pygame.image.load("../assets/images/player/Player_Water.png").convert_alpha()
     SHEETS_LIST = [PLAYER_MOVEMENT_SPRITE, PLAYER_HOE_SPRITE, PLAYER_WATER_SPRITE]
+
+def sound_effect(file, play):
+    global sound
+    sound = pygame.mixer.Sound(file)
+    if play:
+        sound.play(1)
+        return True
+    elif not play:
+        sound.stop()
+        return False
 
 def draw_next_day_button(screen):
     BUTTON_WIDTH = 100
@@ -108,8 +130,6 @@ def set_sprite(type):
     PLAYER_SPRITE_SHEET = PlayerSprite(DIMENTION, DIMENTION, SCALE, BLACK)
     PLAYER = PLAYER_SPRITE_SHEET.get_image(SHEETS_LIST[SHEET_NUMBER], PLAYER_SPRITE_MOVEMENT_COL, PLAYER_SPRITE_MOVEMENT_ROW, type, FLIP_CHARACTER)
 
-
-
 def can_move_to(x, y):
     global game_map, TILE_X, TILE_Y
     TILE_X = int(x // (game_map.tmx_data.tilewidth * game_map.scale))
@@ -118,30 +138,36 @@ def can_move_to(x, y):
 
 # Player movement
 def player_movement():
-    global PLAYER_X, PLAYER_Y, PLAYER_SPRITE_MOVEMENT_ROW, PLAYER_SPRITE_MOVEMENT_COL, FLIP_CHARACTER, DIRECTION, toolbar, inventory
+    global PLAYER_X, PLAYER_Y, PLAYER_SPRITE_MOVEMENT_ROW, PLAYER_SPRITE_MOVEMENT_COL, FLIP_CHARACTER, DIRECTION, toolbar, inventory, sound_effect_playing, sound
     NEW_X, NEW_Y = PLAYER_X, PLAYER_Y
     
+    SOUND_EFFECT = False
 
     keyPressed = pygame.key.get_pressed()
     if keyPressed[pygame.K_UP] or keyPressed[pygame.K_w]:
         NEW_Y -= MOVEMENT_SPEED
         PLAYER_SPRITE_MOVEMENT_ROW = 5
         DIRECTION = "u"
+        SOUND_EFFECT = True
     elif keyPressed[pygame.K_DOWN] or keyPressed[pygame.K_s]:
         NEW_Y += MOVEMENT_SPEED
         PLAYER_SPRITE_MOVEMENT_ROW = 3
         DIRECTION = "d"
+        SOUND_EFFECT = True
     elif keyPressed[pygame.K_LEFT] or keyPressed[pygame.K_a]:
         NEW_X -= MOVEMENT_SPEED
         PLAYER_SPRITE_MOVEMENT_ROW = 4
         FLIP_CHARACTER = True
         DIRECTION = "l"
+        SOUND_EFFECT = True
     elif keyPressed[pygame.K_RIGHT] or keyPressed[pygame.K_d]:
         NEW_X += MOVEMENT_SPEED
         PLAYER_SPRITE_MOVEMENT_ROW = 4
         FLIP_CHARACTER = False
         DIRECTION = "r"
+        SOUND_EFFECT = True
     elif keyPressed[pygame.K_SPACE]:
+        SOUND_EFFECT = False
         if toolbar.get_selected_item() == "Hoe":
             game_map.hoe_land(TILE_X, TILE_Y, DIRECTION)
         elif toolbar.get_selected_item() == "Water":
@@ -150,6 +176,7 @@ def player_movement():
             game_map.plant_seed(TILE_X, TILE_Y, DIRECTION, inventory)
     else:
         # Changes character back to standing position
+        SOUND_EFFECT = False
         if PLAYER_SPRITE_MOVEMENT_ROW >= 3:
             PLAYER_SPRITE_MOVEMENT_ROW -= 3
     
@@ -168,6 +195,18 @@ def player_movement():
     second = pygame.time.get_ticks() / 120
     PLAYER_SPRITE_MOVEMENT_COL = int(second % 6)
     
+    
+    if SOUND_EFFECT:
+        if not sound_effect_playing:
+            sound.set_volume(1)
+            sound.play(-1)
+            sound_effect_playing = True
+    else:
+        if sound_effect_playing:
+            sound.stop()
+            sound_effect_playing = False
+
+
 def main():
     global game_map, OPEN_SHOP, toolbar, PLAYER_SPRITE_SHEET, running, inventory
 
