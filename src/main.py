@@ -76,6 +76,8 @@ def menu_screen():
     screen.blit(background, (0,0))
 
 def prologue():
+    text1 = font.render("Once upon a time", True, WHITE)
+    screen.blit(text1, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
     
 
 def sound_effect(file, play):
@@ -276,7 +278,8 @@ def main():
         next_day_button = draw_next_day_button(screen)
         
         game_map.expand_land(TILE_X, TILE_Y, DIRECTION, inventory)
-        
+        prologue()
+
         # Allow game to be exited
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
