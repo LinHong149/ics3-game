@@ -28,24 +28,24 @@ PLAYER_Y = 830
 MOVEMENT_SPEED = 2
 SCALE = 2.5
 FLIP_CHARACTER = True
-game_map = None
 OPEN_SHOP = False
 SHOP_POSE = (35, 18)
 TILE_X = 0
 TILE_Y = 0
 INITIAL_CURRENCY = 100
 DIRECTION = "u"
-toolbar = None
 PLAYER_SPRITE_SHEET = None
 PLAYER = None
-screen = None
-clock = None
-running = True
 font = None
+screen = None
+game_map = None
+toolbar = None
+clock = None
 inventory = None
-click_buffer = 0
 sound = None
+running = True
 sound_effect_playing = False
+click_buffer = 0
 
 
 def init_pygame():
@@ -70,6 +70,13 @@ def init_pygame():
     PLAYER_HOE_SPRITE = pygame.image.load("../assets/images/player/Player_Hoe.png").convert_alpha()
     PLAYER_WATER_SPRITE = pygame.image.load("../assets/images/player/Player_Water.png").convert_alpha()
     SHEETS_LIST = [PLAYER_MOVEMENT_SPRITE, PLAYER_HOE_SPRITE, PLAYER_WATER_SPRITE]
+
+def menu_screen():
+    background = pygame.image.load("../images/menu")
+    screen.blit(background, (0,0))
+
+def prologue():
+    
 
 def sound_effect(file, play):
     global sound
@@ -141,7 +148,7 @@ def player_movement():
     global PLAYER_X, PLAYER_Y, PLAYER_SPRITE_MOVEMENT_ROW, PLAYER_SPRITE_MOVEMENT_COL, FLIP_CHARACTER, DIRECTION, toolbar, inventory, sound_effect_playing, sound
     NEW_X, NEW_Y = PLAYER_X, PLAYER_Y
     
-    SOUND_EFFECT = False
+    # SOUND_EFFECT = False
 
     keyPressed = pygame.key.get_pressed()
     if keyPressed[pygame.K_UP] or keyPressed[pygame.K_w]:
