@@ -20,7 +20,9 @@ class Shop:
         self.screen.blit(background, (0, 0))
 
         # Draws shop title
-        title = font.render('Shop', True, WHITE)
+
+        title_font = pygame.font.SysFont('arial', 80)
+        title = title_font.render('Shop', True, WHITE)
         self.screen.blit(title, (SCREEN_WIDTH/2 - title.get_width()/2, SCREEN_HEIGHT/2 - title.get_height()/2 - 200))
 
         buy_header = font.render('Buy', True, WHITE)

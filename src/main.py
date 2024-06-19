@@ -73,6 +73,27 @@ def init_pygame():
     PLAYER_WATER_SPRITE = pygame.image.load("../assets/images/player/Player_Water.png").convert_alpha()
     SHEETS_LIST = [PLAYER_MOVEMENT_SPRITE, PLAYER_HOE_SPRITE, PLAYER_WATER_SPRITE]
 
+def print_commands():
+    commands = [
+        "Controls:",
+        "WASD or Arrows: Move",
+        "Buy and sell in the shop building",
+        "1-4: Change Tool (Hoe land before watering)",
+        "Space: Perform Action",
+        "Step over crops to harvest",
+        "Step near water to place dirt",
+        "Click Next Day button to advance crops",
+    ]
+
+    x, y = 10, SCREEN_HEIGHT - (len(commands) * 20) - 10  # Position at the bottom left corner
+
+    commands_font = pygame.font.SysFont('arial', 16)
+
+    for command in commands:
+        text_surface = commands_font.render(command, True, WHITE)
+        screen.blit(text_surface, (x, y))
+        y += 20  # Move down for the next command
+
 def fade_in():
     global black_bg
     for alpha in range(0, 256, 5):
@@ -293,7 +314,7 @@ def main():
     init_pygame()
 
     # Run the prologue first
-    prologue()
+    # prologue()
 
     inventory = Inventory()
 
@@ -343,6 +364,7 @@ def main():
         
         game_map.expand_land(TILE_X, TILE_Y, DIRECTION, inventory)
         game_map.harvest_crop(TILE_X, TILE_Y, inventory)
+        print_commands()
 
         # Allow game to be exited
         for event in pygame.event.get():
