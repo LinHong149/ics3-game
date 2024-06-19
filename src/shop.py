@@ -21,13 +21,18 @@ class Shop:
 
         # Draws shop title
         title = font.render('Shop', True, (255, 255, 255))
-        self.screen.blit(title, (SCREEN_WIDTH/2 - title.get_width()/2, SCREEN_HEIGHT/2 - title.get_height()/2))
+        self.screen.blit(title, (SCREEN_WIDTH/2 - title.get_width()/2, SCREEN_HEIGHT/2 - title.get_height()/2 - 200))
 
         # Draw shop buttons
         buy_dirt_button = pygame.Rect(500,500, 100, 60)
         buy_carrot_seed_button = pygame.Rect(700,500, 100, 60)
-        pygame.draw.rect(self.screen, BLACK, buy_dirt_button, 2)
-        pygame.draw.rect(self.screen, BLACK, buy_carrot_seed_button, 2)
+        pygame.draw.rect(self.screen, WHITE, buy_dirt_button, 2)
+        pygame.draw.rect(self.screen, WHITE, buy_carrot_seed_button, 2)
+
+        buy_dirt_text = self.font.render("Buy Dirt", True, WHITE)
+        buy_seeds_text = self.font.render("Buy Seeds", True, WHITE)
+        self.screen.blit(buy_dirt_text, (buy_dirt_button.x + 10, buy_dirt_button.y + 10))
+        self.screen.blit(buy_seeds_text, (buy_carrot_seed_button.x + 10, buy_carrot_seed_button.y + 10))
         
         if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - self.click_buffer > 200:
                 self.click_buffer = pygame.time.get_ticks()
@@ -40,7 +45,6 @@ class Shop:
                     self.currency.buy(self.items_prices["carrot_seeds"], "carrot_seeds")
 
         # Button for selling crops
-        
         pygame.draw.rect(self.screen, WHITE, self.sell_button_rect)
         if inventory.get_items().get("carrot", 0) > 0:
             sell_text = self.font.render("Sell Carrot", True, BLACK)

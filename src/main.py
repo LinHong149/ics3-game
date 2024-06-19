@@ -97,14 +97,15 @@ def prologue():
     global alpha, running, black_bg
 
     texts = [
-        "In the beginning, there was nothing but a vast, endless sea.",
-        "A god, feeling curious, created a small island.",
-        "On the island, they placed a human with a special task.",
-        "The human must farm crops, earn dirt, and expand the land.",
-        "With each expansion, the human would transform the ocean into a thriving paradise."
+        "in the beginning, there was nothing but a vast, endless sea.",
+        "a god, feeling curious, created a small island.",
+        "on the island, they placed a human with a special task.",
+        "the human must farm crops, earn dirt, and expand the land.",
+        "with each expansion, the human would transform the ocean into a thriving paradise."
     ]
 
     for text in texts:
+        text = text.capitalize()
         screen.fill(BLACK)
         words = text.split()
         lines = []
@@ -141,7 +142,6 @@ def prologue():
             pygame.display.flip()
 
         fade_in()
-
 
 def sound_effect(file, play):
     global sound
@@ -208,7 +208,6 @@ def can_move_to(x, y):
     TILE_Y = int(y // (game_map.tmx_data.tileheight * game_map.scale))
     return not game_map.check_collision(TILE_X, TILE_Y)
 
-# Player movement
 def player_movement():
     global PLAYER_X, PLAYER_Y, PLAYER_SPRITE_MOVEMENT_ROW, PLAYER_SPRITE_MOVEMENT_COL, FLIP_CHARACTER, DIRECTION, toolbar, inventory, sound_effect_playing, sound
     NEW_X, NEW_Y = PLAYER_X, PLAYER_Y
