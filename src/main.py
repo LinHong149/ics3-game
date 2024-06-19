@@ -1,7 +1,6 @@
 # Import libraries
 import pygame
 from pytmx.util_pygame import load_pygame
-import csv
 import json
 import sys
 from settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, WHITE, BLACK, GREEN, BLUE, RED, YELLOW
@@ -63,9 +62,9 @@ def init_pygame():
 
     # Initialize Music
     pygame.mixer.init()
-    # background_sound = pygame.mixer.Sound("../assets/sounds/background.mp3")
-    # background_sound.play()
-    # background_sound.set_volume(0.4)
+    background_sound = pygame.mixer.Sound("../assets/sounds/background.mp3")
+    background_sound.play()
+    background_sound.set_volume(0.3)
 
     sound = pygame.mixer.Sound("../assets/sounds/effects/grass.mp3.ogg")
 
@@ -154,16 +153,20 @@ def sound_effect(file, play):
         return False
 
 def draw_next_day_button(screen):
-    BUTTON_WIDTH = 100
-    BUTTON_HEIGHT = 100
+    BUTTON_WIDTH = 160
+    BUTTON_HEIGHT = 160
     next_day_button = pygame.Rect(SCREEN_WIDTH - BUTTON_WIDTH - 10 , SCREEN_HEIGHT - BUTTON_HEIGHT - 10, BUTTON_WIDTH, BUTTON_HEIGHT)
-    pygame.draw.rect(screen, BLACK, next_day_button)
+    pygame.draw.rect(screen, WHITE, next_day_button)
+    next_text = font.render("Next", True, BLACK)
+    day_text = font.render("Day", True, BLACK)
+    screen.blit(next_text, (next_day_button.x + 35, next_day_button.y + 30))
+    screen.blit(day_text, (next_day_button.x + 45, next_day_button.y + 80))
     return next_day_button
 
 def draw_toolbar(screen, toolbar, font):
     screen_width = screen.get_width()
-    item_width = 100  # Width of each toolbar item
-    item_height = 40  # Height of the toolbar
+    item_width = 130  # Width of each toolbar item
+    item_height = 60  # Height of the toolbar
     x = (screen_width - (item_width * len(toolbar.items))) // 2  # Center the toolbar
 
     for index, item in enumerate(toolbar.items):
@@ -290,7 +293,7 @@ def main():
     init_pygame()
 
     # Run the prologue first
-    # prologue()
+    prologue()
 
     inventory = Inventory()
 
