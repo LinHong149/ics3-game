@@ -161,7 +161,15 @@ class Map:
                     nature_layer.data[y][x] = crop_block
         self.make_map()
 
-        
+    
+    def harvest_crop(self, x, y, inventory):
+        crop_block = 94
+        nature_layer = self.tmx_data.get_layer_by_name("Nature")
+        if nature_layer.data[y][x] == crop_block:
+            nature_layer.data[y][x] = 0  # Remove the crop
+            self.make_map()
+            inventory.add_item("carrot", 1)  # Add crop to inventory
+
 
     def get_surface(self):
         return self.surface

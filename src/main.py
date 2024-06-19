@@ -340,6 +340,7 @@ def main():
         next_day_button = draw_next_day_button(screen)
         
         game_map.expand_land(TILE_X, TILE_Y, DIRECTION, inventory)
+        game_map.harvest_crop(TILE_X, TILE_Y, inventory)
 
         # Allow game to be exited
         for event in pygame.event.get():
