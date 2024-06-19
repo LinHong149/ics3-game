@@ -78,6 +78,7 @@ class Map:
 
     def hoe_land(self, x, y, direction):
             layer = self.tmx_data.get_layer_by_name("Map")
+            nature_layer = self.tmx_data.get_layer_by_name("Nature")
             # Makes the current tile the one in front of the player
             dry_dirt_block = 17
             print(direction)
@@ -94,6 +95,7 @@ class Map:
             # If not grass tile
             if current_tile != dry_dirt_block:
                 layer.data[target_tile[0]][target_tile[1]] = dry_dirt_block
+                nature_layer.data[target_tile[0]][target_tile[1]] = 0
                 self.make_map()
 
     def water_land(self, x, y, direction):
@@ -144,7 +146,6 @@ class Map:
             print(current_map_tile, current_nature_tile)
     
     def grow_crops(self):
-        print("-----------------")
         seed_block = 83
         sprout_block = 84
         plant_block = 90
@@ -161,12 +162,31 @@ class Map:
                     nature_layer.data[y][x] = crop_block
         self.make_map()
 
+    def revert_land(self):
+        grass_block = 39
+        dry_dirt_block = 17
+        wet_dirt_block = 23
+        map_layer = self.tmx_data.get_layer_by_name("Map")
+        nature_layer = self.tmx_data.get_layer_by_name("Nature")
+        for y in range(self.tmx_data.height):
+            for x in range(self.tmx_data.width):
+                current_tile = map_layer.data[y][x]
+                if current_tile == wet_dirt_block:
+                    map_layer.data[y][x] = dry_dirt_block
+                elif current_tile == dry_dirt_block:
+                    map_layer.data[y][x] = grass_block
+                    nature_layer.data[y][x] = 0
+
+
+
     
     def harvest_crop(self, x, y, inventory):
-        crop_block = 94
+        crop_block = 91
+        map_layer = self.tmx_data.get_layer_by_name("Map")
         nature_layer = self.tmx_data.get_layer_by_name("Nature")
-        if nature_layer.data[y][x] == crop_block:
-            nature_layer.data[y][x] = 0  # Remove the crop
+        if nature_layer.data[y+1][x+1] == crop_block:
+            nature_layer.data[y+1][x+1] = 0  # Remove the crop
+            map_layer.data[y+1][x+1] = 39
             self.make_map()
             inventory.add_item("carrot", 1)  # Add crop to inventory
 

@@ -28,5 +28,7 @@ class Game:
         self.day += 1
         print(self.day)
         game_map.grow_crops()
+        game_map.revert_land()
+        
 
     
