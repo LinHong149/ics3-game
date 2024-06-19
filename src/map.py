@@ -150,16 +150,23 @@ class Map:
         sprout_block = 84
         plant_block = 90
         crop_block = 91
+        dry_dirt_block = 17
+        map_layer = self.tmx_data.get_layer_by_name("Map")
         nature_layer = self.tmx_data.get_layer_by_name("Nature")
         for y in range(self.tmx_data.height):
             for x in range(self.tmx_data.width):
                 current_tile = nature_layer.data[y][x]
-                if current_tile == seed_block:
-                    nature_layer.data[y][x] = sprout_block
-                elif current_tile == sprout_block:
-                    nature_layer.data[y][x] = plant_block
-                elif current_tile == plant_block:
-                    nature_layer.data[y][x] = crop_block
+
+                # If the plant is on a dry block, kill it
+                if map_layer.data[y][x] == dry_dirt_block:
+                    nature_layer.data[y][x] = 0
+                else:
+                    if current_tile == seed_block:
+                        nature_layer.data[y][x] = sprout_block
+                    elif current_tile == sprout_block:
+                        nature_layer.data[y][x] = plant_block
+                    elif current_tile == plant_block:
+                        nature_layer.data[y][x] = crop_block
         self.make_map()
 
     def revert_land(self):
@@ -176,9 +183,7 @@ class Map:
                 elif current_tile == dry_dirt_block:
                     map_layer.data[y][x] = grass_block
                     nature_layer.data[y][x] = 0
-
-
-
+        self.make_map()
     
     def harvest_crop(self, x, y, inventory):
         crop_block = 91
