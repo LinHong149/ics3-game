@@ -1,15 +1,16 @@
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH, BLACK
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH, BLACK, WHITE
 import pygame
 
 class Shop:
     click_buffer = 0
-    def __init__(self, screen, currency, items_prices):
+    def __init__(self, screen, currency, items_prices, font):
         self.screen = screen
         self.currency = currency
         self.items_prices = items_prices
-        pass
+        self.font = font
+        self.sell_button_rect = pygame.Rect(100, 100, 200, 50)
 
-    def draw(self):
+    def draw(self, inventory):
         font = pygame.font.SysFont('arial', 40)
 
         # Draws black opaque background
@@ -37,5 +38,27 @@ class Shop:
 
                 elif buy_carrot_seed_button.collidepoint(mouse_pose):
                     self.currency.buy(self.items_prices["carrot_seeds"], "carrot_seeds")
+
+        # Button for selling crops
+        
+        pygame.draw.rect(self.screen, WHITE, self.sell_button_rect)
+        if inventory.get_items().get("carrot", 0) > 0:
+            sell_text = self.font.render("Sell Carrot", True, BLACK)
+            self.screen.blit(sell_text, (self.sell_button_rect.x + 10, self.sell_button_rect.y + 10))
+        else:
+            sell_text = self.font.render("No Carrots to Sell", True, BLACK)
+            self.screen.blit(sell_text, (self.sell_button_rect.x + 10, self.sell_button_rect.y + 10))
+
+
+    def handle_event(self, event, inventory):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.sell_button_rect.collidepoint(event.pos):
+                if inventory.get_items().get("carrot", 0) > 0:
+                    self.sell_crop(inventory)
+
+    def sell_crop(self, inventory):
+        if inventory.get_items().get("carrot", 0) > 0:
+            inventory.remove_item("carrot", 1)
+            self.currency.add(self.items_prices["carrot"])
 
 

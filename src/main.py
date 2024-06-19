@@ -303,7 +303,7 @@ def main():
     camera = Camera(game_map.width, game_map.height)
     counter = 0
     currency = Currency(INITIAL_CURRENCY, inventory)
-    shop = Shop(screen, currency, items_prices)
+    shop = Shop(screen, currency, items_prices, font)
 
     toolbar_items = ["Empty", "Hoe", "Water", "Seed"]
     toolbar = Toolbar(toolbar_items)
@@ -327,7 +327,7 @@ def main():
             OPEN_SHOP = False
 
         if OPEN_SHOP:
-            shop.draw()
+            shop.draw(inventory)
         else:
             player_movement()
 
@@ -356,6 +356,8 @@ def main():
                     toolbar.select_item(2)
                 elif event.key == pygame.K_4:
                     toolbar.select_item(3)
+            elif OPEN_SHOP:
+                shop.handle_event(event, inventory) 
 
             if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - click_buffer > 400:
                 mouse_pos = pygame.mouse.get_pos()

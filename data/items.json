@@ -6,7 +6,11 @@
         },
         {
             "name": "carrot_seeds",
-            "price": 10
+            "price": 6
+        },
+        {
+            "name": "carrot",
+            "price": 12
         }
     ]
 }
