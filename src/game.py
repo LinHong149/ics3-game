@@ -24,7 +24,9 @@ class Game:
         # Update game state
         pass
 
-    def next_day(self):
+    def next_day(self, game_map):
         self.day += 1
         print(self.day)
+        game_map.grow_crops()
+
     

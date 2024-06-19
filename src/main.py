@@ -46,6 +46,9 @@ sound = None
 running = True
 sound_effect_playing = False
 click_buffer = 0
+alpha = 0
+black_bg = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+black_bg.fill(BLACK)
 
 
 def init_pygame():
@@ -59,10 +62,10 @@ def init_pygame():
     font = pygame.font.SysFont('arial', 40)
 
     # Initialize Music
-    pygame.mixer.init
-    background_sound = pygame.mixer.Sound("../assets/sounds/background.mp3")
-    background_sound.play()
-    background_sound.set_volume(0.4)
+    pygame.mixer.init()
+    # background_sound = pygame.mixer.Sound("../assets/sounds/background.mp3")
+    # background_sound.play()
+    # background_sound.set_volume(0.4)
 
     sound = pygame.mixer.Sound("../assets/sounds/effects/grass.mp3.ogg")
 
@@ -71,14 +74,74 @@ def init_pygame():
     PLAYER_WATER_SPRITE = pygame.image.load("../assets/images/player/Player_Water.png").convert_alpha()
     SHEETS_LIST = [PLAYER_MOVEMENT_SPRITE, PLAYER_HOE_SPRITE, PLAYER_WATER_SPRITE]
 
-def menu_screen():
-    background = pygame.image.load("../images/menu")
-    screen.blit(background, (0,0))
+def fade_in():
+    global black_bg
+    for alpha in range(0, 256, 5):
+        black_bg.set_alpha(alpha)
+        screen.blit(black_bg, (0, 0))
+        pygame.display.flip()
+        clock.tick(FPS)
+
+def fade_out(text_surfaces, text_rects):
+    global black_bg
+    for alpha in range(255, -1, -5):
+        black_bg.set_alpha(alpha)
+        screen.fill(BLACK)  # Ensure the screen is filled with black
+        for text_surface, text_rect in zip(text_surfaces, text_rects):
+            screen.blit(text_surface, text_rect)  # Draw the text again to keep it visible during fade-out
+        screen.blit(black_bg, (0, 0))  # Apply the fading effect
+        pygame.display.flip()
+        clock.tick(FPS)
 
 def prologue():
-    text1 = font.render("Once upon a time", True, WHITE)
-    screen.blit(text1, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
-    
+    global alpha, running, black_bg
+
+    texts = [
+        "In the beginning, there was nothing but a vast, endless sea.",
+        "A god, feeling curious, created a small island.",
+        "On the island, they placed a human with a special task.",
+        "The human must farm crops, earn dirt, and expand the land.",
+        "With each expansion, the human would transform the ocean into a thriving paradise."
+    ]
+
+    for text in texts:
+        screen.fill(BLACK)
+        words = text.split()
+        lines = []
+        current_line = ""
+        for word in words:
+            if font.size(current_line + word)[0] < SCREEN_WIDTH - 200:  # Adjust 200 for padding
+                current_line += word + " "
+            else:
+                lines.append(current_line)
+                current_line = word + " "
+        lines.append(current_line)  # Append the last line
+
+        text_surfaces = [font.render(line, True, WHITE) for line in lines]
+        text_rects = [text_surface.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + (i * font.size(lines[0])[1]))) for i, text_surface in enumerate(text_surfaces)]
+        
+        fade_out(text_surfaces, text_rects)
+        
+        for text_surface, text_rect in zip(text_surfaces, text_rects):
+            screen.blit(text_surface, text_rect)
+        
+        pygame.display.flip()
+        
+        
+        start_time = pygame.time.get_ticks()
+        while pygame.time.get_ticks() - start_time < 3000:  # Display text for 4 seconds
+            black_bg.set_alpha(0)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    return
+            screen.fill(BLACK)
+            for text_surface, text_rect in zip(text_surfaces, text_rects):
+                screen.blit(text_surface, text_rect)
+            pygame.display.flip()
+
+        fade_in()
+
 
 def sound_effect(file, play):
     global sound
@@ -227,6 +290,8 @@ def main():
     # Pygame setup
     init_pygame()
 
+    # Run the prologue first
+    # prologue()
 
     inventory = Inventory()
 
@@ -237,13 +302,11 @@ def main():
 
     camera = Camera(game_map.width, game_map.height)
     counter = 0
-    currency = Currency(INITIAL_CURRENCY,inventory)
+    currency = Currency(INITIAL_CURRENCY, inventory)
     shop = Shop(screen, currency, items_prices)
 
     toolbar_items = ["Empty", "Hoe", "Water", "Seed"]
     toolbar = Toolbar(toolbar_items)
-
-
 
     while running:
         screen.fill(BLACK)
@@ -253,21 +316,20 @@ def main():
         game_map.render_layers(screen, camera, below_player_layers=[0,1,2,3,5], above_player_layers=[])
 
         player_rect = pygame.Rect(PLAYER_X, PLAYER_Y, PLAYER_MOVEMENT_SPRITE_DIMENTION, PLAYER_MOVEMENT_SPRITE_DIMENTION)
-        screen.blit(PLAYER,camera.apply(player_rect))
+        screen.blit(PLAYER, camera.apply(player_rect))
        
         # Renders map elements
-        game_map.render_layers(screen, camera, below_player_layers=[], above_player_layers=[4, 6 ])
+        game_map.render_layers(screen, camera, below_player_layers=[], above_player_layers=[4, 6])
 
         if TILE_X == SHOP_POSE[0] and TILE_Y == SHOP_POSE[1]:
             OPEN_SHOP = True
-        if OPEN_SHOP and (pygame.key.get_pressed()[pygame.K_DOWN] or pygame.key.get_pressed()[pygame.K_LEFT] or pygame.key.get_pressed()[pygame.K_RIGHT]  ):
+        if OPEN_SHOP and (pygame.key.get_pressed()[pygame.K_DOWN] or pygame.key.get_pressed()[pygame.K_LEFT] or pygame.key.get_pressed()[pygame.K_RIGHT]):
             OPEN_SHOP = False
 
         if OPEN_SHOP:
             shop.draw()
         else:
             player_movement()
-
 
         camera.update(player_rect)
 
@@ -278,7 +340,6 @@ def main():
         next_day_button = draw_next_day_button(screen)
         
         game_map.expand_land(TILE_X, TILE_Y, DIRECTION, inventory)
-        prologue()
 
         # Allow game to be exited
         for event in pygame.event.get():
@@ -295,12 +356,11 @@ def main():
                 elif event.key == pygame.K_4:
                     toolbar.select_item(3)
 
-
             if pygame.mouse.get_pressed()[0] and pygame.time.get_ticks() - click_buffer > 400:
                 mouse_pos = pygame.mouse.get_pos()
                 if next_day_button.collidepoint(mouse_pos):
                     print("next day")
-                    game.next_day()
+                    game.next_day(game_map)
 
         pygame.display.flip()
         clock.tick(FPS)  # limits FPS

@@ -53,13 +53,6 @@ class Map:
                 return True
         return False
 
-    # def test(self, x, y):
-    #     tile_x = int(x // (self.tmx_data.tilewidth * self.scale))
-    #     tile_y = int(y // (self.tmx_data.tileheight * self.scale))
-    #     tile_layer = self.tmx_data.get_layer_by_name("Map")
-    #     gid = tile_layer.data[tile_y][tile_x]
-    #     return(tile_layer.data, gid, tile_x, tile_y)
-        
     def expand_land(self, x, y, direction, inventory):
         if "dirt" in inventory.get_items() and inventory.get_items()["dirt"] > 0:
             layer = self.tmx_data.get_layer_by_name("Map")
@@ -149,7 +142,26 @@ class Map:
                 inventory.get_items()["carrot_seeds"] -= 1
                 self.make_map()
             print(current_map_tile, current_nature_tile)
+    
+    def grow_crops(self):
+        print("-----------------")
+        seed_block = 83
+        sprout_block = 84
+        plant_block = 90
+        crop_block = 91
+        nature_layer = self.tmx_data.get_layer_by_name("Nature")
+        for y in range(self.tmx_data.height):
+            for x in range(self.tmx_data.width):
+                current_tile = nature_layer.data[y][x]
+                if current_tile == seed_block:
+                    nature_layer.data[y][x] = sprout_block
+                elif current_tile == sprout_block:
+                    nature_layer.data[y][x] = plant_block
+                elif current_tile == plant_block:
+                    nature_layer.data[y][x] = crop_block
+        self.make_map()
 
+        
 
     def get_surface(self):
         return self.surface
